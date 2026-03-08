@@ -13,7 +13,7 @@ public class WeatherApiConfig {
     @Value("${accuweather.api.base-url}")
     private String baseUrl;
 
-    @Value("${accuweather.api.key}")
+    @Value("${accuweather_api_key}")
     private String apiKey;
 
     @Bean
