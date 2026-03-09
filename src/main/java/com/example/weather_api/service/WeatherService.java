@@ -54,19 +54,19 @@ public class WeatherService {
                 .collect(Collectors.toList());
     }
 
-    public String getMaxTemperature() {
-        return Collections.max(getTemperatureList()) + "C";
+    public Double getMaxTemperature() {
+        return Collections.max(getTemperatureList());
     }
 
-    public String getMinTemperature() {
-        return Collections.min(getTemperatureList()) + "C";
+    public Double getMinTemperature() {
+        return Collections.min(getTemperatureList());
     }
 
-    public String getAvgTemperature() {
+    public Double getAvgTemperature() {
         return Math.round(getTemperatureList().stream()
                 .mapToDouble(Double::doubleValue)
                 .average()
-                .orElse(0.0) * 100) / 100.0 + " C";
+                .orElse(0.0) * 100) / 100.0;
     }
 
     public Optional<WeatherNowData> getWeatherByTime(Integer num) {

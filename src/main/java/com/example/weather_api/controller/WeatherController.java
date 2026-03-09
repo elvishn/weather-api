@@ -25,13 +25,13 @@ public class WeatherController {
     public List<WeatherNowData> getWeatherData24hours() { return service.getWeather24hours();}
 
     @GetMapping("/weather/historical/max")
-    public String getMaxTemperature() {return service.getMaxTemperature();}
+    public Double getMaxTemperature() {return service.getMaxTemperature();}
 
     @GetMapping("/weather/historical/min")
-    public String getMinTemperature() {return service.getMinTemperature();}
+    public Double getMinTemperature() {return service.getMinTemperature();}
 
     @GetMapping("/weather/historical/avg")
-    public String getAvgTemperature() {return service.getAvgTemperature();}
+    public Double getAvgTemperature() {return service.getAvgTemperature();}
 
     @GetMapping("/weather/by_time")
     public Optional<WeatherNowData> getWeatherByTime(@RequestParam
