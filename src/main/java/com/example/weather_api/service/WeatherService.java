@@ -72,8 +72,7 @@ public class WeatherService {
     public Optional<WeatherNowData> getWeatherByTime(Integer num) {
         return getWeather24hours().stream()
                 .filter(dto -> {
-                    String hour = dto.getTime().substring(0, 2);
-                    return Integer.parseInt(hour) == num;
+                    return dto.getTime().getHour() == num;
                 })
                 .findFirst();
     }

@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,8 +16,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WeatherNowData {
     private String cityName = "Zemmart";
-    private final String date;
-    private final String time;
+    private final LocalDate date;
+    private final LocalTime time;
     private final Double value; //температура
     private final String unit; //еденицы измерения
     private final String weatherText;
@@ -28,9 +31,9 @@ public class WeatherNowData {
 
     public static  WeatherNowData toNowDto(JsonNode root) {
         JsonNode dto = root.isArray() ? root.get(0) : root;
-        List<String> dateTime = toDateAndTime(dto.path("LocalObservationDateTime").asText());
-        String date = dateTime.get(0);
-        String time = dateTime.get(1);
+        ZonedDateTime dateTime = ZonedDateTime.parse(dto.path("LocalObservationDateTime").asText());
+        LocalDate date = dateTime.toLocalDate();
+        LocalTime time = dateTime.toLocalTime();
         String weatherText = dto.path("WeatherText").asText();
         String precipitationType = dto.path("PrecipitationType").asText(); // тип осадков
         Double value = dto.path("Temperature").path("Metric").path("Value").asDouble(); //температура
@@ -40,12 +43,5 @@ public class WeatherNowData {
         }
         return new WeatherNowData(date, time, value, unit, weatherText, precipitationType);
 
-    }
-
-    private static List<String> toDateAndTime(String s) {
-        List<String> res = List.of(s.split("T"));
-        String date = res.get(0);
-        String time = ((String)res.get(1)).substring(0, 8);
-        return Arrays.asList(date, time);
     }
 }
