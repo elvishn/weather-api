@@ -3,7 +3,6 @@ package com.example.weather_api.service;
 import com.example.weather_api.data.WeatherNowData;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -12,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 
 @Service
@@ -30,14 +28,11 @@ public class WeatherService {
                 .map(jsonNode -> WeatherNowData.toNowDto(jsonNode));
     }
 
-    public List<WeatherNowData> getWeather24hours() {
-        JsonNode list = webClient.get()
+    public Mono<List<WeatherNowData>> getWeather24hours() {
+        return webClient.get()
                 .uri(NOW_URL_TEMPLATE + "/historical/24")
                 .retrieve()
-                .bodyToMono(JsonNode.class)
-                .block();
-
-        return StreamSupport.stream(list.spliterator(), false)
+                .bodyToFlux(JsonNode.class)
                 .map(WeatherNowData::toNowDto)
                 .collect(Collectors.toList());
     }
@@ -73,11 +68,12 @@ public class WeatherService {
                         });
     }
 
-    public Optional<WeatherNowData> getWeatherByTime(Integer num) {
-        return getWeather24hours().stream()
-                .filter(dto -> {
-                    return dto.getTime().getHour() == num;
-                })
-                .findFirst();
+    public Mono<Optional<WeatherNowData>> getWeatherByTime(Integer num) {
+        return getWeather24hours()
+                .map(list ->
+                        list.stream()
+                                .filter(dto -> dto.getTime().getHour() == num)
+                                .findFirst());
+
     }
 }

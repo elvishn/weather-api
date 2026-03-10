@@ -22,7 +22,7 @@ public class WeatherController {
     }
 
     @GetMapping("/weather/historical")
-    public List<WeatherNowData> getWeatherData24hours() { return service.getWeather24hours();}
+    public Mono<List<WeatherNowData>> getWeatherData24hours() { return service.getWeather24hours();}
 
     @GetMapping("/weather/historical/max")
     public Mono<Double> getMaxTemperature() {return service.getMaxTemperature();}
@@ -34,7 +34,7 @@ public class WeatherController {
     public Mono<Double> getAvgTemperature() {return service.getAvgTemperature();}
 
     @GetMapping("/weather/by_time")
-    public Optional<WeatherNowData> getWeatherByTime(@RequestParam
+    public Mono<Optional<WeatherNowData>> getWeatherByTime(@RequestParam
                                                      @Range(min=0, max=23, message="Hour should be between 0 and 23")
                                                      int hour) {
         return service.getWeatherByTime(hour);
