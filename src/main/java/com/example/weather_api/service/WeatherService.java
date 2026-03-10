@@ -38,15 +38,10 @@ public class WeatherService {
     }
 
     public Mono<List<Double>> getTemperatureList() {
-        return webClient.get()
-                .uri(NOW_URL_TEMPLATE + "/historical/24")
-                .retrieve()
-                .bodyToFlux(JsonNode.class)  // Получаем Flux из 24 элементов
-                .map(node -> node.path("Temperature")
-                        .path("Metric")
-                        .path("Value")
-                        .asDouble())
-                .collectList();
+        return getWeather24hours()
+                .map(data -> data.stream()
+                            .map(WeatherNowData::getValue)
+                        .toList());
     }
 
     public Mono<Double> getMaxTemperature() {
