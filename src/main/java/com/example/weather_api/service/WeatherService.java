@@ -42,31 +42,35 @@ public class WeatherService {
                 .collect(Collectors.toList());
     }
 
-    public List<Double> getTemperatureList() {
-        JsonNode list = webClient.get()
+    public Mono<List<Double>> getTemperatureList() {
+        return webClient.get()
                 .uri(NOW_URL_TEMPLATE + "/historical/24")
                 .retrieve()
-                .bodyToMono(JsonNode.class)
-                .block();
-
-        return StreamSupport.stream(list.spliterator(), false)
-                .map(node -> node.path("Temperature").path("Metric").path("Value").asDouble())
-                .collect(Collectors.toList());
+                .bodyToFlux(JsonNode.class)  // Получаем Flux из 24 элементов
+                .map(node -> node.path("Temperature")
+                        .path("Metric")
+                        .path("Value")
+                        .asDouble())
+                .collectList();
     }
 
-    public Double getMaxTemperature() {
-        return Collections.max(getTemperatureList());
+    public Mono<Double> getMaxTemperature() {
+        return getTemperatureList().map(list -> Collections.max(list));
     }
 
-    public Double getMinTemperature() {
-        return Collections.min(getTemperatureList());
+    public Mono<Double> getMinTemperature() {
+        return getTemperatureList().map(list -> Collections.min(list));
     }
 
-    public Double getAvgTemperature() {
-        return Math.round(getTemperatureList().stream()
-                .mapToDouble(Double::doubleValue)
-                .average()
-                .orElse(0.0) * 100) / 100.0;
+    public Mono<Double> getAvgTemperature() {
+        return getTemperatureList()
+                        .map(list -> {
+                            double avg = list.stream()
+                                    .mapToDouble(Double::doubleValue)
+                                    .average()
+                                    .orElse(0.0);
+                        return Math.round(avg * 100) / 100.0;
+                        });
     }
 
     public Optional<WeatherNowData> getWeatherByTime(Integer num) {
