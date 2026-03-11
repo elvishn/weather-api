@@ -2,9 +2,13 @@ package com.example.weather_api.controller;
 
 import com.example.weather_api.data.WeatherNowData;
 import com.example.weather_api.service.WeatherService;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 import org.hibernate.validator.constraints.Range;
 import java.util.List;
@@ -12,6 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/api")
 public class WeatherController {
     private final WeatherService service;
@@ -34,10 +39,10 @@ public class WeatherController {
     public Mono<Double> getAvgTemperature() {return service.getAvgTemperature();}
 
     @GetMapping("/weather/by_time")
-    public Mono<Optional<WeatherNowData>> getWeatherByTime(@RequestParam
-                                                     @Range(min=0, max=23, message="Hour should be between 0 and 23")
-                                                     int hour) {
-        return service.getWeatherByTime(hour);
+    public Mono<WeatherNowData> getWeatherByTime(@RequestParam("hour") @Min(0) @Max(23) int hour) {
+        return service.getWeatherByTime(hour)
+                .flatMap(optional -> optional.map(Mono::just).orElseGet(Mono::empty))
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Data for hour not found")));
     }
 
     @GetMapping("/health")
