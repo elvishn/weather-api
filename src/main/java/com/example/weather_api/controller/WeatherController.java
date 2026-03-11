@@ -1,5 +1,6 @@
 package com.example.weather_api.controller;
 
+import com.example.weather_api.data.TemperatureResponse;
 import com.example.weather_api.data.WeatherNowData;
 import com.example.weather_api.service.WeatherService;
 import jakarta.validation.constraints.Max;
@@ -30,13 +31,13 @@ public class WeatherController {
     public Mono<List<WeatherNowData>> getWeatherData24hours() { return service.getWeather24hours();}
 
     @GetMapping("/weather/historical/max")
-    public Mono<Double> getMaxTemperature() {return service.getMaxTemperature();}
+    public Mono<TemperatureResponse> getMaxTemperature() {return service.getMaxTemperature();}
 
     @GetMapping("/weather/historical/min")
-    public Mono<Double> getMinTemperature() {return service.getMinTemperature();}
+    public Mono<TemperatureResponse> getMinTemperature() {return service.getMinTemperature();}
 
     @GetMapping("/weather/historical/avg")
-    public Mono<Double> getAvgTemperature() {return service.getAvgTemperature();}
+    public Mono<TemperatureResponse> getAvgTemperature() {return service.getAvgTemperature();}
 
     @GetMapping("/weather/by_time")
     public Mono<WeatherNowData> getWeatherByTime(@RequestParam("hour") @Min(0) @Max(23) int hour) {

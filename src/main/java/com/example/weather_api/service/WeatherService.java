@@ -1,10 +1,12 @@
 package com.example.weather_api.service;
 
+import com.example.weather_api.data.TemperatureResponse;
 import com.example.weather_api.data.WeatherNowData;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.CoreSubscriber;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;
@@ -44,15 +46,19 @@ public class WeatherService {
                         .toList());
     }
 
-    public Mono<Double> getMaxTemperature() {
-        return getTemperatureList().map(list -> Collections.max(list));
+    public Mono<TemperatureResponse> getMaxTemperature() {
+        return getTemperatureList()
+                .map(list -> Collections.max(list))
+                .map(maxTemp -> new TemperatureResponse(maxTemp, "C"));
     }
 
-    public Mono<Double> getMinTemperature() {
-        return getTemperatureList().map(list -> Collections.min(list));
+    public Mono<TemperatureResponse> getMinTemperature() {
+        return getTemperatureList()
+                .map(list -> Collections.min(list))
+                .map(minTemp -> new TemperatureResponse(minTemp, "C"));
     }
 
-    public Mono<Double> getAvgTemperature() {
+    public Mono<TemperatureResponse> getAvgTemperature() {
         return getTemperatureList()
                         .map(list -> {
                             double avg = list.stream()
@@ -60,7 +66,8 @@ public class WeatherService {
                                     .average()
                                     .orElse(0.0);
                         return Math.round(avg * 100) / 100.0;
-                        });
+                        })
+                .map(avgTemp -> new TemperatureResponse(avgTemp, "C"));
     }
 
     public Mono<Optional<WeatherNowData>> getWeatherByTime(Integer num) {
