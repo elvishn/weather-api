@@ -12,10 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
-@RequiredArgsConstructor
 public class WeatherNowData {
-    private String cityName = "Zemmart";
+    private final String cityName = "Zermart";
     private final LocalDate date;
     private final LocalTime time;
     private final Double value; //температура
@@ -26,7 +24,7 @@ public class WeatherNowData {
 
     @Override
     public String toString() {
-        return  "City: " + cityName + "\n" + "Date: " + cityName + "\n" + "Temperature: " + value + " " + unit + "\n" + "Weather description: " + weatherText + "\n" + "Type precipitation: " + precipitationType;
+        return  "City: " + cityName + "\n" + "Date: " + date + "\n" + "Time: " + time + "\n" + "Temperature: " + value + " " + unit + "\n" + "Weather description: " + weatherText + "\n" + "Type precipitation: " + precipitationType;
     }
 
     public static  WeatherNowData toNowDto(JsonNode root) {
